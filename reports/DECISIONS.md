@@ -68,3 +68,37 @@ konfigurasi terdampak dijalankan ulang.
 - **Alasan:** Tahap 1 hanya mengaudit data dan tidak berwenang membuat perubahan
   pra-pemrosesan.
 
+## 2026-10-13 — Kebijakan deduplikasi Tahap 2
+
+- **Keputusan:** Setelah normalisasi nama file, kelompok duplikat dibentuk dari
+  `(normalized_file, exact_trimmed_question)` dan baris dengan ID asli terkecil
+  dipertahankan.
+- **Alasan:** Aturan ini deterministik, independen dari kualitas isi jawaban,
+  dan tidak memilih label secara oportunistik. Semua ID yang dipertahankan dan
+  dibuang disimpan di `data/processed/dedup_audit.jsonl`.
+
+## 2026-10-13 — Konteks kanonik Tahap 2
+
+- **Keputusan:** Teks corpus chunk pada kunci `(doc_id, page_number,
+  chunk_index)` menjadi field `context` kanonik. Teks konteks dari dataset tetap
+  disimpan sebagai `dataset_context`, disertai `context_changed`.
+- **Alasan:** Retrieval berikutnya beroperasi pada corpus chunk, sehingga qrel
+  dan konteks kanonik harus merujuk pada representasi corpus yang sama. Retensi
+  konteks dataset menjaga auditabilitas 12 ketidaksesuaian.
+
+## 2026-10-13 — Split dokumen dibekukan
+
+- **Keputusan:** Urutkan 120 `doc_id`, acak dengan `random.Random(42)`, lalu
+  tetapkan 24 dokumen pertama sebagai dev dan 96 sisanya sebagai test.
+- **Alasan:** Algoritme tidak bergantung pada urutan filesystem, menghasilkan
+  tepat 20%/80% dokumen, tidak menimbulkan kebocoran, dan mempertahankan semua
+  delapan tipe pertanyaan pada kedua split.
+
+## 2026-10-13 — Penanda angka Tahap 2 bersifat provisional
+
+- **Keputusan:** `has_number` versi `stage2_candidate_v1` memask kode PES lalu
+  mendeteksi kandidat angka biasa. `has_pes_code` dihitung terpisah.
+- **Alasan:** Urutan tahap meminta penanda tersedia sebelum modul angka formal
+  Tahap 3. Penanda ini tidak boleh digunakan untuk pemilihan subset eksperimen
+  sebelum diverifikasi dan, bila perlu, dihitung ulang oleh modul tervalidasi.
+

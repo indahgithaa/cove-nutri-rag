@@ -1,0 +1,41 @@
+seed: 42
+dev_fraction: 0.20
+
+paths:
+  dataset: data/dataset/dataset.json
+  chunks_dir: data/chunks
+  processed_dir: data/processed
+
+normalization:
+  unicode_form: NFKC
+  decode_hash_u: true
+  remove_codepoints:
+    - U+2060
+
+deduplication:
+  key:
+    - normalized_file
+    - exact_trimmed_question
+  keep: smallest_original_id
+
+context:
+  canonical_source: chunk_corpus
+  join_key:
+    - normalized_file
+    - page_number
+    - chunk_index
+  retain_dataset_context: true
+
+split:
+  unit: document
+  algorithm: sorted_documents_then_python_random_shuffle
+  dev_fraction: 0.20
+  seed: 42
+
+flags:
+  has_number_version: stage2_candidate_v1
+  has_number_note: >-
+    Exploratory ordinary-number flag with PES spans masked. It must be
+    revalidated by the tested numeric module in Stage 3 before experiments.
+  has_pes_code_version: stage2_regex_v1
+

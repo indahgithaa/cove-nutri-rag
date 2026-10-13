@@ -132,3 +132,74 @@ Saran commit message (bahasa Inggris):
 
 Menunggu konfirmasi "lanjut".
 
+## Checkpoint Tahap 2: Pra-pemrosesan dan Split
+
+Status: SELESAI DENGAN CATATAN
+
+Yang dikerjakan:
+- Mengimplementasikan normalisasi nama file, validasi schema, join QA–chunk,
+  deduplikasi deterministik, pemetaan tipe, dan split per dokumen.
+- Menggunakan konteks corpus chunk sebagai konteks kanonik dan mempertahankan
+  konteks dataset untuk audit.
+- Menghasilkan data bersih, split dev/test, corpus chunk bersih, audit
+  duplikasi, dan manifest split.
+- Menambahkan penanda angka provisional dan kode PES serta 25 unit test.
+
+File yang dibuat/diubah:
+- `configs/data.yaml` — konfigurasi pra-pemrosesan dan split yang dibekukan.
+- `src/data.py` — implementasi pipeline data.
+- `scripts/preprocess.py` — entry point dan generator laporan Tahap 2.
+- `tests/test_data.py` — unit test normalisasi, tipe, penanda, deduplikasi, dan
+  split.
+- `reports/02_preprocessing.md` — laporan rekonsiliasi dan distribusi split.
+- `data/processed/qa_clean.jsonl` — 858 QA final.
+- `data/processed/qa_dev.jsonl` — 175 QA dari 24 dokumen dev.
+- `data/processed/qa_test.jsonl` — 683 QA dari 96 dokumen test.
+- `data/processed/chunks_clean.jsonl` — 13.737 chunk kanonik.
+- `data/processed/dedup_audit.jsonl` — audit 35 kelompok duplikat.
+- `data/processed/split_manifest.json` — konfigurasi, fingerprint, dan daftar
+  dokumen per split.
+- `reports/DECISIONS.md` dan `reports/PROGRESS.md` — keputusan dan checkpoint.
+
+Bukti verifikasi:
+- Rekonsiliasi: `911 → 858 → 858 → 858`; 53 baris duplikat dibuang dan 0 QA
+  gagal di-join.
+- Split: dev 24 dokumen/175 QA; test 96 dokumen/683 QA; irisan dokumen 0.
+- Semua delapan tipe pertanyaan tersedia pada dev dan test.
+- Penanda: dev memiliki 89 `has_number` dan 24 `has_pes_code`; test memiliki
+  329 `has_number` dan 89 `has_pes_code`.
+- `25 passed in 0.12s`.
+- Regenerasi menghasilkan SHA-256 identik untuk keenam artefak data dan laporan
+  (`REPRODUCIBLE_OUTPUTS=True`).
+- Validasi menyeluruh: `PROCESSED_INTEGRITY_CHECK: PASS`; tidak ada perubahan
+  pada `data/dataset` atau `data/chunks`.
+
+Kriteria lolos tahap ini:
+- [x] Rekonsiliasi jumlah QA lengkap.
+- [x] Tidak ada QA gagal di-join.
+- [x] Tidak ada dokumen pada dua split.
+- [x] Semua delapan tipe tersedia pada kedua split.
+- [x] `has_number` dan `has_pes_code` tersedia pada setiap QA.
+
+Temuan penting / keanehan:
+- Dua puluh lima unit test menangkap dan memperbaiki decoder `#Uxxxx` yang
+  semula dapat menyerap huruf heksadesimal setelah empat digit.
+- Semua 12 ketidaksesuaian konteks berada pada split test. Keputusan memakai
+  chunk corpus sebagai konteks kanonik telah dibuat sebelum hasil split dilihat,
+  dan isi kasus test tidak digunakan untuk desain metode.
+- `has_number` menandai 418/858 QA dan tetap provisional sampai Tahap 3.
+
+Pertanyaan atau keputusan yang butuh persetujuan Anda:
+- Tidak ada untuk menutup Tahap 2. Tahap 3 harus mengaudit ulang `has_number`
+  dan meregenerasi data QA jika hasil modul tervalidasi berbeda.
+
+Rencana tahap berikutnya (belum dikerjakan):
+- Tahap 3 akan mengimplementasikan ekstraksi/normalisasi angka dan kode PES,
+  minimal 30 unit test, validasi cakupan pada gold, serta 20 contoh acak untuk
+  pemeriksaan pengguna.
+
+Saran commit message (bahasa Inggris):
+- `feat: add deterministic preprocessing and document splits`
+
+Menunggu konfirmasi "lanjut".
+
