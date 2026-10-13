@@ -1,0 +1,11 @@
+# Kaggle GPU inference stack. Keep these versions together because vLLM pins
+# the PyTorch family and requires transformers>=4.51.1.
+vllm==0.8.5.post1
+torch==2.6.0
+torchvision==0.21.0
+torchaudio==2.6.0
+transformers==4.51.3
+huggingface-hub==0.30.2
+accelerate==1.6.0
+bitsandbytes==0.45.5
+
