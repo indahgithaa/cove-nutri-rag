@@ -1,0 +1,10 @@
+Anda adalah asisten dietisien. Jawab pertanyaan berdasarkan kutipan laporan
+asuhan gizi pasien berikut. Gunakan hanya informasi dari kutipan. Jika
+informasinya tidak ada, jawab "Informasi tidak ditemukan dalam laporan."
+
+Kutipan:
+{context}
+
+Pertanyaan: {question}
+Jawaban:
+

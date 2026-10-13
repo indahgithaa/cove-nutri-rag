@@ -178,3 +178,42 @@ konfigurasi terdampak dijalankan ulang.
   Modul retriever tetap umum dan dapat digunakan kembali untuk query expansion
   atau hierarchical retrieval bila diperlukan.
 
+## 2026-10-13 — Model smoke test Tahap 5
+
+- **Keputusan:** Memakai `Qwen/Qwen2.5-7B-Instruct-AWQ` revision
+  `b25037543e9394b818fdfca67ab2a00ecc7dd641` dan
+  `mistralai/Mistral-7B-Instruct-v0.3` revision
+  `c170c708c41dac9275d15a8fff4eca08d52bab71`.
+- **Keputusan:** Qwen menggunakan AWQ 4-bit. Mistral dimuat 4-bit dengan
+  bitsandbytes. Backend utama adalah vLLM; fallback Transformers menggunakan
+  NF4 bitsandbytes dan dicatat eksplisit dalam setiap hasil.
+- **Alasan:** Kedua model berasal dari keluarga berbeda, berukuran sekitar 7B,
+  tidak gated, dan metadata Hugging Face menyatakan lisensi Apache-2.0. vLLM
+  0.8.5 mendukung AWQ dan bitsandbytes pada GPU Turing/T4.
+
+## 2026-10-13 — Konfigurasi decoding dan cache Tahap 5
+
+- **Keputusan:** Membekukan temperature 0, top-p 1, seed 42, maksimum 256 token
+  keluaran, dan panjang konteks maksimum 4096 token. Cache key mencakup model,
+  revision, konfigurasi decoding, QA, langkah, versi prompt, dan hash prompt.
+- **Alasan:** Konfigurasi deterministik dan cache berbasis seluruh input mencegah
+  penggunaan ulang hasil yang berasal dari prompt atau model berbeda.
+
+## 2026-10-13 — Sampel smoke test
+
+- **Keputusan:** Memilih lima QA dev berangka secara acak deterministik dari
+  `has_number`, seed 42: ID 36, 142, 278, 285, dan 330. Kedua model memakai QA,
+  prompt `vanilla_v1`, dan konteks normal yang sama.
+- **Alasan:** Sampel hanya menguji infrastruktur, bukan mengestimasi efek metode.
+  Pemilihan sebelum inferensi dan tanpa melihat isi jawaban model mencegah
+  pemilihan contoh secara oportunistik.
+
+## 2026-10-13 — Infrastruktur LLM reusable dan privat
+
+- **Keputusan:** Schema job/result, cache, runner, serta notebook tidak bergantung
+  pada CoVe; metode dan langkah dinyatakan sebagai field data. Bundle Kaggle
+  wajib diunggah secara privat.
+- **Alasan:** Infrastruktur dapat digunakan ulang untuk RG-CoVe, query expansion,
+  atau hierarchical retrieval, sambil menjaga potongan laporan klinis tidak
+  dipublikasikan.
+

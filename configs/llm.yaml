@@ -1,0 +1,61 @@
+version: llm_v1
+seed: 42
+
+paths:
+  prompt: prompts/vanilla_v1.txt
+  dev_qa: data/processed/qa_dev.jsonl
+  dev_contexts: data/processed/contexts_normal_dev.jsonl
+  jobs_dir: data/processed/llm_jobs
+  results_dir: results/runs
+
+decoding:
+  temperature: 0.0
+  top_p: 1.0
+  max_new_tokens: 256
+  max_model_len: 4096
+  seed: 42
+
+engine:
+  preferred_backend: vllm
+  fallback_backend: transformers
+  gpu_memory_utilization: 0.90
+  dtype: half
+  trust_remote_code: false
+
+smoke_test:
+  split: dev
+  condition: normal
+  method: V
+  sample_size: 5
+  numeric_only: true
+  seed: 42
+
+models:
+  qwen25_7b_awq:
+    family: qwen2.5
+    model_id: Qwen/Qwen2.5-7B-Instruct-AWQ
+    revision: b25037543e9394b818fdfca67ab2a00ecc7dd641
+    tokenizer_id: Qwen/Qwen2.5-7B-Instruct-AWQ
+    tokenizer_revision: b25037543e9394b818fdfca67ab2a00ecc7dd641
+    license: apache-2.0
+    gated: false
+    quantization: awq
+    load_format: auto
+    fallback_model_id: Qwen/Qwen2.5-7B-Instruct
+    fallback_revision: a09a35458c702b33eeacc393d103063234e8bc28
+    fallback_quantization: bitsandbytes-nf4
+
+  mistral_7b_v03_bnb4:
+    family: mistral
+    model_id: mistralai/Mistral-7B-Instruct-v0.3
+    revision: c170c708c41dac9275d15a8fff4eca08d52bab71
+    tokenizer_id: mistralai/Mistral-7B-Instruct-v0.3
+    tokenizer_revision: c170c708c41dac9275d15a8fff4eca08d52bab71
+    license: apache-2.0
+    gated: false
+    quantization: bitsandbytes
+    load_format: bitsandbytes
+    fallback_model_id: mistralai/Mistral-7B-Instruct-v0.3
+    fallback_revision: c170c708c41dac9275d15a8fff4eca08d52bab71
+    fallback_quantization: bitsandbytes-nf4
+
