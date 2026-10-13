@@ -46,3 +46,25 @@ konfigurasi terdampak dijalankan ulang.
   perubahan terhadap status versi yang harus dilakukan secara eksplisit dan
   tidak boleh disamakan dengan penghapusan file lokal.
 
+## 2026-10-13 — Status aturan EDA Tahap 1
+
+- **Keputusan:** Pemetaan delapan tipe pertanyaan, deduplikasi *keep-first*,
+  normalisasi angka, kategorisasi angka, dan toleransi pencocokan yang digunakan
+  dalam `reports/01_eda.md` dinyatakan eksploratif, bukan konfigurasi final.
+- **Alasan:** Sebanyak 31 dari 35 kelompok duplikat mempunyai jawaban berbeda;
+  selain itu parser eksploratif menghasilkan 393 jawaban dengan angka minimal
+  dua digit, bukan temuan pendahuluan 413, dan cakupan angka pada chunk gold
+  72,15%, bukan sekitar 76%. Keputusan final memerlukan audit formal pada Tahap
+  2 dan unit test modul angka pada Tahap 3.
+
+## 2026-10-13 — Sumber konteks kanonik belum ditetapkan
+
+- **Temuan:** Seluruh 911 QA cocok secara unik berdasarkan `(file,
+  page_number, chunk_index)`, tetapi hanya 899 teks `context` yang identik
+  dengan teks pada file chunk.
+- **Keputusan:** Tidak mengubah 12 konteks yang berbeda pada Tahap 1. Pemilihan
+  antara `context` dataset dan teks chunk sebagai sumber kanonik diputuskan dan
+  dicatat pada Tahap 2 sebelum data olahan dibuat.
+- **Alasan:** Tahap 1 hanya mengaudit data dan tidak berwenang membuat perubahan
+  pra-pemrosesan.
+
