@@ -19,6 +19,8 @@ from typing import Iterable, Iterator
 
 import yaml
 
+from src.numbers import has_number, has_pes_code
+
 
 QUESTION_TYPES = (
     "Skrining",
@@ -40,14 +42,6 @@ QUESTION_TYPE_RULES = (
     ("prinsip diet", "Prinsip diet"),
     ("syarat diet", "Syarat diet"),
     ("pedoman diet", "Pedoman diet"),
-)
-
-PES_CODE_RE = re.compile(r"\bN[ICB]\s*[-.]?\s*\d+(?:\.\d+)+\b", re.IGNORECASE)
-CANDIDATE_NUMBER_RE = re.compile(
-    r"(?<![A-Za-z])"
-    r"[+-]?"
-    r"(?:\d{1,3}(?:\.\d{3})+(?:,\d+)?|\d+\.\d+|\d+(?:,\d+)?)"
-    r"(?:\s*%)?"
 )
 
 REQUIRED_QA_FIELDS = {
@@ -105,14 +99,13 @@ def extract_answer_text(row: dict) -> str:
 
 
 def contains_pes_code(text: str) -> bool:
-    return PES_CODE_RE.search(text) is not None
+    return has_pes_code(text)
 
 
 def contains_numeric_candidate(text: str) -> bool:
-    """Provisional Stage 2 flag; Stage 3 owns validated number extraction."""
+    """Compatibility wrapper for the validated Stage 3 number flag."""
 
-    without_codes = PES_CODE_RE.sub(" ", text)
-    return CANDIDATE_NUMBER_RE.search(without_codes) is not None
+    return has_number(text)
 
 
 def sha256(path: Path) -> str:

@@ -1,0 +1,28 @@
+version: numbers_v1.2
+
+normalization:
+  decimal_comma: true
+  dot_with_exact_three_digit_groups: thousands
+  other_single_dot: decimal
+  percent_scale: percentage_points
+  preserve_sign: true
+
+exclusions:
+  list_markers: true
+  labeled_page_numbers: true
+  standalone_page_numbers: true
+  section_numbers: true
+  citation_years: true
+  pes_code_components: true
+
+matching:
+  relative_tolerance: 0.005
+  absolute_tolerance: 0.01
+  relative_denominator: max_absolute_value
+  unit_aware: false
+
+validation:
+  random_seed: 42
+  example_split: dev
+  example_count: 20
+

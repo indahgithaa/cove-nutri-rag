@@ -74,7 +74,7 @@ def test_unknown_question_is_rejected() -> None:
         ("Diagnosis NI-2.1", False),
     ],
 )
-def test_provisional_number_flag(text: str, expected: bool) -> None:
+def test_validated_number_flag(text: str, expected: bool) -> None:
     assert contains_numeric_candidate(text) is expected
 
 

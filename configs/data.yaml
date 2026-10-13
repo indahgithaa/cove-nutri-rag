@@ -33,9 +33,9 @@ split:
   seed: 42
 
 flags:
-  has_number_version: stage2_candidate_v1
+  has_number_version: numbers_v1.2
   has_number_note: >-
-    Exploratory ordinary-number flag with PES spans masked. It must be
-    revalidated by the tested numeric module in Stage 3 before experiments.
-  has_pes_code_version: stage2_regex_v1
+    Validated ordinary-number flag from src/numbers.py. PES spans and configured
+    list, page, and section exclusions are masked before extraction.
+  has_pes_code_version: numbers_v1.2
 

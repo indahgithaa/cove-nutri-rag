@@ -203,3 +203,76 @@ Saran commit message (bahasa Inggris):
 
 Menunggu konfirmasi "lanjut".
 
+## Checkpoint Tahap 3: Modul Angka dan Validasi Metrik
+
+Status: SELESAI DENGAN CATATAN
+
+Yang dikerjakan:
+- Mengimplementasikan ekstraksi dan normalisasi angka klinis Indonesia,
+  rentang, persen, satuan, serta kode PES yang dipisahkan dari angka biasa.
+- Membekukan toleransi pencocokan pada selisih relatif ≤0,5% atau absolut
+  ≤0,01 dan menyimpannya dalam konfigurasi mesin-baca.
+- Menambahkan 104 unit test dan tes regresi untuk seluruh koreksi berbasis dev.
+- Meregenerasi penanda angka pada data olahan dan menghasilkan audit terstruktur
+  per QA, laporan cakupan, serta 20 contoh acak dev.
+
+File yang dibuat/diubah:
+- `configs/numbers.yaml` — format, eksklusi, kategori, dan toleransi final.
+- `src/numbers.py` — parser angka, kode PES, kategorisasi, dan pencocokan.
+- `tests/test_numbers.py` — unit test dan kasus regresi modul angka.
+- `src/data.py`, `configs/data.yaml`, `tests/test_data.py` — integrasi penanda
+  `numbers_v1.2` ke pipeline pra-pemrosesan.
+- `scripts/validate_numbers.py` — validasi cakupan dan generator artefak.
+- `data/processed/gold_numbers.jsonl` — ekstraksi angka/kode per QA.
+- `data/processed/qa_clean.jsonl`, `qa_dev.jsonl`, `qa_test.jsonl` — penanda
+  angka final dengan ID, konteks, dan split yang dipertahankan.
+- `reports/03_numbers.md` — metode, hasil, audit anti-kebocoran, dan keterbatasan.
+- `reports/03_number_examples.md` — 20 contoh acak dari dev.
+- `reports/DECISIONS.md` dan `reports/PROGRESS.md` — keputusan dan checkpoint.
+
+Bukti verifikasi:
+- `104 passed in 0.30s`; syarat minimal 30 unit test terlampaui.
+- Penanda final: 322/858 QA berangka, terdiri dari 67/175 dev dan 255/683
+  test; kode PES terdapat pada 24 dev dan 89 test.
+- Cakupan kemunculan angka gold: 3617/3645 (99,23%) pada laporan pasien dan
+  2445/3645 (67,08%) pada chunk gold.
+- Semua angka gold per jawaban tercakup pada laporan untuk 314/322 (97,52%)
+  QA berangka dan pada chunk untuk 141/322 (43,79%).
+- `PROCESSED_INTEGRITY_CHECK: PASS`; dev/test tetap 24/96 dokumen tanpa overlap,
+  seluruh flag identik dengan hasil parser, dan 20 contoh unik semuanya dev.
+- SHA-256 sepuluh artefak data/laporan identik setelah rerun
+  (`REPRODUCIBLE_OUTPUTS=True`).
+- `git status -- data/dataset data/chunks` kosong dan `git diff --check` tidak
+  menemukan error whitespace.
+
+Kriteria lolos tahap ini:
+- [x] Sedikitnya 30 unit test lulus (aktual: 104).
+- [x] Proporsi angka gold pada laporan dan chunk dilaporkan; selisih terhadap
+  temuan pendahuluan dijelaskan tanpa tuning ke target.
+- [x] Dua puluh contoh ekstraksi acak ditampilkan dan seluruhnya berasal dari
+  dev.
+
+Temuan penting / keanehan:
+- Cakupan laporan 99,23% konsisten dengan estimasi pendahuluan sekitar 99%,
+  tetapi cakupan chunk 67,08% lebih rendah 8,92 poin persentase dari estimasi
+  sekitar 76%.
+- Parser tetap dapat mempertahankan sebagian nomor regulasi, referensi bebas,
+  atau indeks formula yang tidak memiliki pola eksklusi tegas. Kategori berbasis
+  konteks juga bersifat deskriptif, bukan label klinis tervalidasi.
+- Setelah validasi pertama, koreksi hanya dirancang dari audit dev; setiap
+  versi dikunci dan seluruh validasi dev/test dijalankan ulang serta dicatat.
+
+Pertanyaan atau keputusan yang butuh persetujuan Anda:
+- Tidak ada untuk menutup Tahap 3. Selisih cakupan chunk akan dibawa sebagai
+  catatan saat menafsirkan hasil retrieval, bukan dihilangkan lewat tuning.
+
+Rencana tahap berikutnya (belum dikerjakan):
+- Tahap 4 akan mengimplementasikan BM25 tetap untuk kondisi normal (peringkat
+  1–3) dan terdegradasi (peringkat 4–6), lalu melaporkan Recall@3 dan cakupan
+  angka gold serta menyimpan konteks per split/kondisi.
+
+Saran commit message (bahasa Inggris):
+- `feat: add validated numeric extraction and coverage audit`
+
+Menunggu konfirmasi "lanjut".
+

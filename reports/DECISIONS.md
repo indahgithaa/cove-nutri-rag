@@ -102,3 +102,43 @@ konfigurasi terdampak dijalankan ulang.
   Tahap 3. Penanda ini tidak boleh digunakan untuk pemilihan subset eksperimen
   sebelum diverifikasi dan, bila perlu, dihitung ulang oleh modul tervalidasi.
 
+## 2026-10-13 — Aturan angka final Tahap 3
+
+- **Keputusan:** Membekukan parser `numbers_v1.2`: koma sebagai desimal, titik
+  tiga digit sebagai pemisah ribuan, rentang menjadi dua nilai, persen tetap
+  dalam poin persentase, serta nomor daftar/halaman/bagian, tahun sitasi, dan
+  komponen kode PES dikecualikan dari angka biasa.
+- **Keputusan:** Dua nilai cocok bila selisih absolutnya ≤0,01 atau selisih
+  relatif simetrisnya ≤0,5%, dengan penyebut nilai absolut terbesar. Unit tidak
+  menentukan kecocokan.
+- **Alasan:** Definisi tersebut eksplisit, dapat diuji, mendukung format angka
+  klinis Indonesia, dan sesuai definisi metrik pada protokol penelitian.
+
+## 2026-10-13 — Koreksi parser setelah validasi pertama
+
+- **Temuan:** Sesudah run validasi pertama, pemeriksaan 20 contoh acak dari
+  **dev** menemukan tanda negatif berspasi, sitasi tahun majemuk, dan pola
+  perkalian kompak belum ditangani. Audit dev berikutnya menemukan awalan angka
+  parsial pada kode alfanumerik dan sitasi multi-baris.
+- **Keputusan:** Memperbaiki masalah tersebut dalam `numbers_v1.1` lalu
+  `numbers_v1.2`, menambah tes regresi, dan menjalankan ulang validasi lengkap
+  setelah setiap perubahan. Tidak ada contoh atau arah hasil test yang dipakai
+  untuk merancang koreksi.
+- **Alasan:** Perubahan memperbaiki cacat format yang dapat direproduksi pada
+  dev. Rerun penuh menjaga hasil dev/test tetap berasal dari satu konfigurasi
+  final yang sama.
+
+## 2026-10-13 — Penanda angka dan hasil validasi final
+
+- **Keputusan:** Mengganti penanda provisional Tahap 2 dengan hasil
+  `numbers_v1.2`; subset final berangka adalah 322/858 QA (67 dev, 255 test).
+- **Temuan:** Cakupan kemunculan angka gold pada laporan adalah 3617/3645
+  (99,23%), sedangkan pada chunk gold 2445/3645 (67,08%). Nilai chunk lebih
+  rendah 8,92 poin persentase dari estimasi pendahuluan sekitar 76%.
+- **Keputusan:** Memakai dan melaporkan nilai final apa adanya tanpa menyesuaikan
+  parser ke estimasi pendahuluan.
+- **Alasan:** Parser final mengecualikan angka nonklinis secara lebih ketat,
+  konteks kanonik memakai corpus chunk, dan definisi rinci parser pendahuluan
+  tidak tersedia. Selisih ini merupakan keterbatasan yang harus dibawa ke
+  analisis berikutnya, bukan sasaran optimasi.
+
