@@ -276,3 +276,73 @@ Saran commit message (bahasa Inggris):
 
 Menunggu konfirmasi "lanjut".
 
+## Checkpoint Tahap 4: Retrieval BM25 Tetap
+
+Status: SELESAI
+
+Yang dikerjakan:
+- Mengimplementasikan BM25 per laporan pasien dengan parameter protokol dan
+  tokenisasi query berbasis stopword Sastrawi.
+- Membekukan kondisi normal pada peringkat 1–3 dan kondisi terdegradasi pada
+  peringkat 4–6 dari ranking yang sama.
+- Membuat qrel strict, menghitung Recall@3 serta cakupan angka gold, dan
+  menghasilkan konteks fixed untuk seluruh QA dev/test.
+- Memisahkan konteks LLM dari jawaban gold, qrel, dan metrik evaluasi.
+
+File yang dibuat/diubah:
+- `configs/retrieval.yaml` — parameter dan kondisi retrieval yang dibekukan.
+- `src/retrieval.py` — tokenisasi, indeks BM25 per dokumen, ranking, pemilihan
+  kondisi, qrel, dan cakupan numerik.
+- `scripts/run_retrieval.py` — generator konteks, qrels, metrik, dan laporan.
+- `tests/test_retrieval.py` — 17 tes retrieval.
+- `data/processed/contexts_normal_dev.jsonl` — 175 konteks normal dev.
+- `data/processed/contexts_degraded_dev.jsonl` — 175 konteks terdegradasi dev.
+- `data/processed/contexts_normal_test.jsonl` — 683 konteks normal test.
+- `data/processed/contexts_degraded_test.jsonl` — 683 konteks terdegradasi test.
+- `data/processed/qrels_gold_dev.jsonl` dan `qrels_gold_test.jsonl` — qrel strict.
+- `reports/04_retrieval.md` — metode, hasil, validasi, dan keterbatasan.
+- `reports/DECISIONS.md` dan `reports/PROGRESS.md` — keputusan dan checkpoint.
+
+Bukti verifikasi:
+- Recall@3 keseluruhan: normal 305/858 (35,55%); terdegradasi 138/858
+  (16,08%).
+- Cakupan kemunculan angka gold keseluruhan: normal 1606/3645 (44,06%);
+  terdegradasi 1388/3645 (38,08%).
+- Dev: Recall 27,43%/20,57% dan cakupan angka 43,89%/39,64% untuk
+  normal/terdegradasi.
+- Test: Recall 37,63%/14,93% dan cakupan angka 44,11%/37,66% untuk
+  normal/terdegradasi.
+- `RETRIEVAL_INTEGRITY_CHECK=PASS`: 858 qrel valid, tiga chunk per kondisi,
+  dokumen sesuai, 0 query kosong, 0 kebocoran gold, dan 0 overlap kondisi.
+- `121 passed`; 17 di antaranya tes retrieval baru.
+- Ketujuh artefak konteks/qrel/laporan identik pada rerun
+  (`REPRODUCIBLE_OUTPUTS=True`), dan data mentah tidak berubah.
+
+Kriteria lolos tahap ini:
+- [x] Recall@3 dan cakupan angka gold dilaporkan untuk kondisi normal dan
+  terdegradasi pada dev/test.
+- [x] File konteks tersedia untuk seluruh split dan kondisi.
+
+Temuan penting / keanehan:
+- Recall normal relatif rendah karena delapan pertanyaan merupakan template
+  umum yang berulang, sehingga sinyal leksikal untuk menemukan lokasi gold
+  terbatas.
+- Kondisi terdegradasi menurunkan Recall@3 sebesar 19,47 poin persentase dan
+  cakupan angka sebesar 5,98 poin persentase secara keseluruhan.
+- Pada dev, proporsi QA dengan seluruh angka tercakup sedikit lebih tinggi pada
+  kondisi terdegradasi (19,40%) daripada normal (14,93%), meski cakupan per
+  kemunculan angka lebih rendah. Semua hasil dipertahankan tanpa tuning.
+
+Pertanyaan atau keputusan yang butuh persetujuan Anda:
+- Tidak ada untuk menutup Tahap 4.
+
+Rencana tahap berikutnya (belum dikerjakan):
+- Tahap 5 akan menyiapkan notebook inferensi Kaggle, format job/result dan
+  cache, konfigurasi dua model, alur multi-langkah, serta smoke test lima QA dev
+  per model.
+
+Saran commit message (bahasa Inggris):
+- `feat: add fixed bm25 retrieval contexts`
+
+Menunggu konfirmasi "lanjut".
+

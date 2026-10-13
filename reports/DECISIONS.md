@@ -142,3 +142,39 @@ konfigurasi terdampak dijalankan ulang.
   tidak tersedia. Selisih ini merupakan keterbatasan yang harus dibawa ke
   analisis berikutnya, bukan sasaran optimasi.
 
+## 2026-10-13 — Retrieval BM25 tetap Tahap 4
+
+- **Keputusan:** Membekukan `bm25_fixed_v1` dengan `k1=1,5`, `b=0,75`,
+  `epsilon=0,25`, dan ruang pencarian hanya chunk dalam `doc_id` pasien yang
+  sudah dipilih.
+- **Keputusan:** Query memakai token Unicode NFKC/casefold dan menghapus
+  stopword Sastrawi ditambah `apa`, `bagaimana`, `yang`, `ini`, serta `pasien`.
+  Stopword corpus tidak dihapus. Tie skor dipecahkan menurut halaman dan indeks
+  chunk.
+- **Keputusan:** Kondisi normal memakai peringkat 1–3 dan kondisi terdegradasi
+  memakai peringkat 4–6 dari ranking yang sama. Qrel strict ditentukan langsung
+  oleh `(doc_id, page_number, chunk_index)` QA.
+- **Alasan:** Seluruh pilihan ditetapkan oleh protokol sebelum metrik dev/test
+  dihitung, sehingga retrieval sama untuk semua metode dan stress test dapat
+  dibandingkan secara terkontrol.
+
+## 2026-10-13 — Pemisahan konteks LLM dan label evaluasi
+
+- **Keputusan:** File `contexts_<condition>_<split>.jsonl` hanya memuat
+  pertanyaan, token query, dan tiga chunk hasil retrieval. Jawaban gold, qrel,
+  dan metrik disimpan terpisah.
+- **Alasan:** Mencegah kebocoran label ke input LLM dan memastikan seluruh
+  metode berikutnya memakai konteks fixed yang sama.
+
+## 2026-10-13 — Hasil retrieval tidak dituning
+
+- **Temuan:** Secara keseluruhan, Recall@3 strict qrel adalah 35,55% pada
+  kondisi normal dan 16,08% pada kondisi terdegradasi. Cakupan kemunculan angka
+  gold masing-masing 44,06% dan 38,08%.
+- **Keputusan:** Mempertahankan konfigurasi tanpa penyesuaian setelah hasil test
+  terlihat dan melaporkan nilai rendah apa adanya.
+- **Alasan:** Pertanyaan dataset berupa template umum sehingga retrieval rendah
+  merupakan karakteristik penting data, bukan alasan untuk tuning pada test.
+  Modul retriever tetap umum dan dapat digunakan kembali untuk query expansion
+  atau hierarchical retrieval bila diperlukan.
+

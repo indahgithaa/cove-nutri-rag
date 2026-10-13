@@ -1,0 +1,42 @@
+version: bm25_fixed_v1
+seed: 42
+
+paths:
+  qa_dev: data/processed/qa_dev.jsonl
+  qa_test: data/processed/qa_test.jsonl
+  chunks: data/processed/chunks_clean.jsonl
+  numbers: configs/numbers.yaml
+  output_dir: data/processed
+
+bm25:
+  k1: 1.5
+  b: 0.75
+  epsilon: 0.25
+  scope: within_document
+
+tokenization:
+  unicode_form: NFKC
+  pattern: "\\w+"
+  lowercase: true
+  remove_stopwords_from_query_only: true
+  stopword_source: sastrawi
+  additional_query_stopwords:
+    - apa
+    - bagaimana
+    - yang
+    - ini
+    - pasien
+
+conditions:
+  normal:
+    ranks: [1, 3]
+  degraded:
+    ranks: [4, 6]
+
+qrels:
+  type: strict_gold_chunk
+  join_key:
+    - doc_id
+    - page_number
+    - chunk_index
+
